@@ -68,7 +68,7 @@ Vagrant.configure("2") do |config|
     v.cpus = 2
   end
 
-  config.vm.synced_folder ".", "/vagrant", type: "rsync"
+  config.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__auto: true
 
   config.vm.define "master" do |node|
     node.vm.box = "centos/7"
