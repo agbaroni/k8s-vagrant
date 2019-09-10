@@ -7,7 +7,7 @@ yum -y install net-tools telnet
 yum -y remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine
 yum -y install -y yum-utils device-mapper-persistent-data lvm2
 yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-yum -y install docker-ce docker-ce-cli containerd.io
+yum -y install docker-ce-18.09.9 docker-ce-cli-18.09.9 containerd.io
 mkdir -p /etc/docker
 mv /tmp/daemon.json /etc/docker/daemon.json
 mkdir -p /etc/systemd/system/docker.service.d
@@ -42,7 +42,7 @@ yum -y install net-tools telnet
 yum -y remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine
 yum -y install -y yum-utils device-mapper-persistent-data lvm2
 yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-yum -y install docker-ce docker-ce-cli containerd.io
+yum -y install docker-ce-18.09.9 docker-ce-cli-18.09.9 containerd.io
 mkdir -p /etc/docker
 mv /tmp/daemon.json /etc/docker/daemon.json
 mkdir -p /etc/systemd/system/docker.service.d
@@ -80,7 +80,6 @@ Vagrant.configure("2") do |config|
     node.vm.provision "file", source: "kubernetes.repo", destination: "/tmp/kubernetes.repo"
     node.vm.provision "file", source: "k8s.conf", destination: "/tmp/k8s.conf"
     node.vm.provision "file", source: "daemon.json", destination: "/tmp/daemon.json"
-    node.vm.provision "file", source: "dashboard-admin.yml", destination: "/tmp/dashboard-admin.yml"
     node.vm.provision "shell", inline: $master_script
   end
 
