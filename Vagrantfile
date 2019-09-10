@@ -1,4 +1,4 @@
-Vagrant.require_version ">= 2.2.4"
+Vagrant.require_version ">= 2.2.5"
 
 ENV["LC_ALL"] = "it_IT.UTF-8"
 
@@ -32,7 +32,10 @@ chown vagrant:vagrant /home/vagrant/.kube/config
 su - vagrant -c "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/62e44c867a2846fefb68bd5f178daf4da3095ccb/Documentation/kube-flannel.yml"
 su - vagrant -c "kubectl taint nodes --all node-role.kubernetes.io/master-"
 su - vagrant -c "kubeadm token create --print-join-command > /vagrant/join.sh"
+su - vagrant -c "kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta2/aio/deploy/recommended.yaml"
 EOF
+
+# su - vagrant -c "kubectl apply -f dashboard-admin.yml"
 
 $worker_script = <<-EOF
 yum -y install net-tools telnet
@@ -77,6 +80,7 @@ Vagrant.configure("2") do |config|
     node.vm.provision "file", source: "kubernetes.repo", destination: "/tmp/kubernetes.repo"
     node.vm.provision "file", source: "k8s.conf", destination: "/tmp/k8s.conf"
     node.vm.provision "file", source: "daemon.json", destination: "/tmp/daemon.json"
+    node.vm.provision "file", source: "dashboard-admin.yml", destination: "/tmp/dashboard-admin.yml"
     node.vm.provision "shell", inline: $master_script
   end
 
