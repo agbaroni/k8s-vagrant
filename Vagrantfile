@@ -32,7 +32,7 @@ chown vagrant:vagrant /home/vagrant/.kube/config
 su - vagrant -c "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/62e44c867a2846fefb68bd5f178daf4da3095ccb/Documentation/kube-flannel.yml"
 su - vagrant -c "kubectl taint nodes --all node-role.kubernetes.io/master-"
 su - vagrant -c "kubeadm token create --print-join-command > /vagrant/join.sh"
-su - vagrant -c "kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta2/aio/deploy/recommended.yaml"
+su - vagrant -c "kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta4/aio/deploy/recommended.yaml"
 EOF
 
 # su - vagrant -c "kubectl apply -f dashboard-admin.yml"
