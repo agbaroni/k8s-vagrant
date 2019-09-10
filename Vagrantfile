@@ -33,9 +33,8 @@ su - vagrant -c "kubectl apply -f https://raw.githubusercontent.com/coreos/flann
 su - vagrant -c "kubectl taint nodes --all node-role.kubernetes.io/master-"
 su - vagrant -c "kubeadm token create --print-join-command > /vagrant/join.sh"
 su - vagrant -c "kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta4/aio/deploy/recommended.yaml"
+su - vagrant -c "kubectl apply -f /tmp/kubernetes-dashboard-public.yml"
 EOF
-
-# su - vagrant -c "kubectl apply -f dashboard-admin.yml"
 
 $worker_script = <<-EOF
 yum -y install net-tools telnet
@@ -63,8 +62,6 @@ systemctl enable kubelet
 . /vagrant/join.sh
 EOF
 
-# kubeadm join 192.168.150.2:6443 --token 145dgr.dzv3o9lwnqbzqcik     --discovery-token-ca-cert-hash sha256:593e03fb70ede6b51e4f8dbe3d24f908d418185fad7ac47ede0e52941d4591ac
-
 Vagrant.configure("2") do |config|
   config.vm.provider 'virtualbox' do |v|
     v.memory = 2048
@@ -80,6 +77,7 @@ Vagrant.configure("2") do |config|
     node.vm.provision "file", source: "kubernetes.repo", destination: "/tmp/kubernetes.repo"
     node.vm.provision "file", source: "k8s.conf", destination: "/tmp/k8s.conf"
     node.vm.provision "file", source: "daemon.json", destination: "/tmp/daemon.json"
+    node.vm.provision "file", source: "kubernetes-dashboard-public.yml", destination: "/tmp/kubernetes-dashboard-public.yml"
     node.vm.provision "shell", inline: $master_script
   end
 
