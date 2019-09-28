@@ -1,0 +1,9 @@
+- name: Open required ports
+  firewalld:
+    immediate: yes
+    port: "{{ item }}/tcp"
+    permanent: yes
+    state: enabled
+  loop:
+    - 10250
+    - 30000-32767

@@ -1,0 +1,90 @@
+- name: Remove legacy Docker packages
+  yum:
+    name: "{{ packages }}"
+    state: absent
+  vars:
+    packages:
+      - docker
+      - docker-client
+      - docker-client-latest
+      - docker-common
+      - docker-latest
+      - docker-latest-logrotate
+      - docker-logrotate
+      - docker-engine
+- name: Install system required packages
+  yum:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+      - net-tools
+      - telnet
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
+- name: Add Docker CE repository for YUM
+  command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+- name: Install Docker CE packages
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - docker-ce-18.09.9
+      - docker-ce-cli-18.09.9
+      - containerd.io
+- name: Create Docker CE configuration directory
+  file:
+    path: /etc/docker
+    state: directory
+- name: Add daemon.json to Docker CE configuration directory
+  command: mv /tmp/daemon.json /etc/docker/daemon.json
+- name: Create systemd service directory for Docker CE
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+- name: Enable and start Docker CE service
+  systemd:
+    name: docker
+    enabled: yes
+    state: started
+- name: Add Kubernetes repository for YUM
+  command: mv /tmp/kubernetes.repo /etc/yum.repos.d/kubernetes.repo
+- name: Put SELinux in permissive mode
+  selinux:
+    policy: targeted
+    state: permissive
+- name: Configure some system options required by Kubernetes
+  command: mv /tmp/k8s.conf /etc/sysctl.d/k8s.conf
+- name: Reload system options
+  command: sysctl --system
+- name: Shutdown swapping
+  command: swapoff -a
+- name: Disable permanently swapping
+  replace:
+    path: /etc/fstab
+    regexp: '^(.+?\sswap\s+sw\s+.*)$'
+    replace: '# \1'
+- name: Enable and start firewalld
+  systemd:
+    name: firewalld
+    enabled: yes
+    state: started
+- name: Install Kubernetes packages
+  yum:
+    disable_excludes: kubernetes
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+       - kubelet
+       - kubeadm
+       - kubectl
+- name: Configure Bash completions for Kubernetes
+  shell: kubectl completion bash > /etc/bash_completion.d/kubectl
+- name: Enable kubectl service
+  systemd:
+    name: kubelet
+    enabled: yes
+    state: stopped
