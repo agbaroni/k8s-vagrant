@@ -66,11 +66,11 @@
     path: /etc/fstab
     regexp: '^(.+?\sswap\s+sw\s+.*)$'
     replace: '# \1'
-- name: Enable and start firewalld
-  systemd:
-    name: firewalld
-    enabled: yes
-    state: started
+# - name: Enable and start firewalld
+#   systemd:
+#     name: firewalld
+#     enabled: yes
+#     state: started
 - name: Install Kubernetes packages
   yum:
     disable_excludes: kubernetes

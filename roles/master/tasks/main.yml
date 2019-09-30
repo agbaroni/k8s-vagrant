@@ -1,18 +1,18 @@
-- name: Open required ports
-  firewalld:
-    immediate: yes
-    port: "{{ item }}/tcp"
-    permanent: yes
-    state: enabled
-  loop:
-    - 6443
-    - 2379
-    - 2380
-    - 10250
-    - 10251
-    - 10252
-#- name: Initialize Kubernetes master node
-#  command: kubeadm init --apiserver-advertise-address=192.168.150.2 --pod-network-cidr=10.244.0.0/16
+# - name: Open required ports
+#   firewalld:
+#     immediate: yes
+#     port: "{{ item }}/tcp"
+#     permanent: yes
+#     state: enabled
+#   loop:
+#     - 6443
+#     - 2379
+#     - 2380
+#     - 10250
+#     - 10251
+#     - 10252
+# - name: Initialize Kubernetes master node
+#   command: kubeadm init --apiserver-advertise-address=192.168.150.2 --pod-network-cidr=10.244.0.0/16
 - name: Create .kube directory for vagrant user
   file:
     path: /home/vagrant/.kube
@@ -28,13 +28,18 @@
     path: /home/vagrant/.kube/config
     owner: vagrant
     group: vagrant
+# - name: Taint master node to accept pods
+#   command: kubectl taint nodes --all node-role.kubernetes.io/master-
+#   become_user: vagrant
 - name: Install a POD network add-on (flannel)
   command: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
-- name: Taint master node to accept pods
-  command: kubectl taint nodes --all node-role.kubernetes.io/master-
+  become_user: vagrant
 - name: Save join token in the common shared directory
   shell: kubeadm token create --print-join-command > /vagrant/join.sh
+  become_user: vagrant
 - name: Install the Kubernetes Dashboard
   command: kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta4/aio/deploy/recommended.yaml
+  become_user: vagrant
 - name: Publish the Kubernetes Dashboard
   command: kubectl apply -f /tmp/kubernetes-dashboard-public.yml
+  become_user: vagrant
